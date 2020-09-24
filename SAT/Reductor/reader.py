@@ -7,7 +7,7 @@ def read_file():
     ACTUAL_DIRECTORY = getcwd() # Get the current directory path (../SAT/Reductor)
     PARENT_DIRECTORY = sep.join(ACTUAL_DIRECTORY.split(sep)[1:-1]) # Get the parent directory (../SAT)
     PARENT_DIRECTORY = join(sep, PARENT_DIRECTORY) # Apeend SO separator to access the folder
-    SAT_instances_directory = join(PARENT_DIRECTORY, "InstanciasSAT") # Joins the parent directory with InstanciasSAT to get into (../SAT/instanciasSAT)
+    SAT_instances_directory = join(PARENT_DIRECTORY, "TEST") # Joins the parent directory with InstanciasSAT to get into (../SAT/instanciasSAT)
     _, _, SAT_instances = next(walk(SAT_instances_directory))
     for SAT_instance in SAT_instances:
         SAT_file = open(join(SAT_instances_directory, SAT_instance), 'r')
@@ -27,8 +27,8 @@ def read_file():
             if problem:
                 problem.append(line[:-3].split(" "))
 
-        
-    print(ALL_PROBLEMS)
+        break    
+    #print(ALL_PROBLEMS)
     return ALL_PROBLEMS
 
-read_file()
+#sread_file()
