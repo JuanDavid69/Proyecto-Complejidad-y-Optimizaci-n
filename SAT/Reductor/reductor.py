@@ -35,7 +35,6 @@ def reduce(x,sat_instance):
     sat_instance_reduced = CNF() # Creamos una instancia de la clase CNF donde se almacenaran las clausulas reducidas
     num_vars = sat_instance.nv # Obtenemos el numero de variables de la instancia a reducir
     new_clause_size = int(x) # Obtenemos el X del X-SAT que deseamos reducir
-    #print(sat_instance.clauses)
     
     for clause in sat_instance:
         
@@ -52,8 +51,39 @@ def reduce(x,sat_instance):
                 num_vars = sat_instance_reduced.nv
             
             elif new_clause_size < clause_size: # Si el tamaño de X-SAT es menor que el tamaño de la clausula actual, reducimos
+                
+                # Primero pasamos de SAT a 3-SAT
+                num_vars = num_vars + 1 # Creamos la nueva variable positiva 
+                
+                # Creamos la primera clausula
+                new_clause = []
+                new_clause.append(clause[0])
+                new_clause.append(clause[1])
+                new_clause.append(num_vars)
+                
+                sat_instance_reduced.append(new_clause)
+                
+                # Creamos todas las clausulas intermedias 
+                for i in range(2, clause_size-2, 1):
+                    new_clause = []
+                    neg_num_vars = num_vars * -1 # Creamos la nueva variable negativa
+                    num_vars = num_vars + 1 # Creamos la nueva variable positiva 
+                    new_clause.append(neg_num_vars)
+                    new_clause.append(clause[i])
+                    new_clause.append(num_vars)
+                    sat_instance_reduced.append(new_clause)
+                
+                # Creamos la ultima clausula
+                neg_num_vars = num_vars * -1 # Creamos la nueva variable negativa
+                new_clause = []
+                new_clause.append(neg_num_vars)
+                new_clause.append(clause[-2])
+                new_clause.append(clause[-1])
+                sat_instance_reduced.append(new_clause)
 
-                num_new_vars = clause_size - new_clause_size # Obtenemos el numero de nuevas variables que vamos a crear
+                # Luego de tener todo en 3-SAT reducimos a X-SAT
+                sat_instance_reduced = reduce(x, sat_instance_reduced)
+                num_vars = sat_instance_reduced.nv
     
     return sat_instance_reduced
 
@@ -62,7 +92,7 @@ def read_cnf_and_reduce(x):
     ACTUAL_DIRECTORY = getcwd() # Get the current directory path (../SAT/Reductor)
     PARENT_DIRECTORY = sep.join(ACTUAL_DIRECTORY.split(sep)[1:-1]) # Get the parent directory (../SAT)
     PARENT_DIRECTORY = join(sep, PARENT_DIRECTORY) # Apeend SO separator to access the folder
-    SAT_instances_directory = join(PARENT_DIRECTORY, "TEST") # Joins the parent directory with InstanciasSAT to get into (../SAT/instanciasSAT)
+    SAT_instances_directory = join(PARENT_DIRECTORY, "InstanciasSAT") # Joins the parent directory with InstanciasSAT to get into (../SAT/instanciasSAT)
     X_SAT_directory = join(PARENT_DIRECTORY, "X-SAT") # Joins the parent directory with InstanciasSAT to get into (../SAT/X-SAT)
     _, _, SAT_instances = next(walk(SAT_instances_directory))
     
@@ -76,7 +106,7 @@ def read_cnf_and_reduce(x):
             sat_instance_reduced = reduce(x, sat_instance) # Llamamos a la funcion "reduce", la cual reduce la instancia que le pasemos
             
             sat_instance_reduced.to_file(join(X_SAT_directory, SAT_instance[:-4] + '_reduced.cnf')) # Escribimos un nuevo archivo .cnf con la instancia reducida
-    
+        print(SAT_instance)
     print("INSTANCIAS REDUCIDAS A %s-SAT." % x)
 
 x = str(sys.argv[1])
