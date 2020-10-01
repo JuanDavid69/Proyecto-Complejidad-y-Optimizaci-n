@@ -106,7 +106,7 @@ def read_cnf_and_reduce(x):
             sat_instance_reduced = reduce(x, sat_instance) # Llamamos a la funcion "reduce", la cual reduce la instancia que le pasemos
             
             sat_instance_reduced.to_file(join(X_SAT_directory, SAT_instance[:-4] + '_reduced.cnf')) # Escribimos un nuevo archivo .cnf con la instancia reducida
-        print(SAT_instance)
+    
     print("INSTANCIAS REDUCIDAS A %s-SAT." % x)
 
 x = str(sys.argv[1])
